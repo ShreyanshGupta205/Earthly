@@ -18,7 +18,7 @@ export default function ContactPage() {
         </div>
         <h1 className="font-display text-4xl font-bold text-sand mb-4">Get in Touch</h1>
         <p className="text-muted text-lg max-w-xl mx-auto mb-12">
-          Have a question, feedback, or want to collaborate? I'd love to hear from you. You can reach out to me through any of the platforms below.
+          Have a question, feedback, or want to collaborate? I&apos;d love to hear from you. You can reach out to me through any of the platforms below.
         </p>
         
         <div className="grid sm:grid-cols-3 gap-6 max-w-2xl mx-auto">
