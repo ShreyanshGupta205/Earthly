@@ -1,36 +1,173 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌍 Earthly — Carbon Footprint Awareness Platform
 
-## Getting Started
+> Built for **Hack2skills 2025** · Powered end-to-end by **Google**
 
-First, run the development server:
+[![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org)
+[![Firebase](https://img.shields.io/badge/Firebase-Firestore%20%2B%20Auth-orange)](https://firebase.google.com)
+[![Gemini](https://img.shields.io/badge/Google-Gemini%201.5%20Flash-blue)](https://aistudio.google.com)
+[![GA4](https://img.shields.io/badge/Google-Analytics%204-yellow)](https://analytics.google.com)
 
+---
+
+## 🟢 Google Products Used
+
+| Product | Purpose | Cost |
+|---|---|---|
+| **Google Gemini 1.5 Flash** | AI-powered weekly carbon insights | ✅ Free (AI Studio) |
+| **Firebase Auth** | Google Sign-In + email/password | ✅ Free (Spark plan) |
+| **Firebase Firestore** | Real-time NoSQL database | ✅ Free (Spark plan) |
+| **Firebase Storage** | Avatar image storage | ✅ Free (Spark plan) |
+| **Google Analytics 4** | User event tracking | ✅ Always free |
+| **Google Fonts** | Inter + Space Grotesk typography | ✅ Always free |
+| **Google Cloud Run** | Production deployment | ✅ Free tier (2M req/month) |
+
+---
+
+## 🚀 Quick Start
+
+### 1. Clone & Install
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd earthly-app
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Set Up Firebase (Free)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Go to [console.firebase.google.com](https://console.firebase.google.com)
+2. **Create a new project** (or use existing)
+3. Enable **Authentication**:
+   - Authentication → Sign-in method → Enable **Email/Password**
+   - Authentication → Sign-in method → Enable **Google**
+4. Enable **Firestore Database**:
+   - Firestore Database → Create database → Start in **production mode**
+   - Copy the security rules from `firestore.rules` → paste into Firestore Rules tab → Publish
+5. Enable **Storage** (for avatars):
+   - Storage → Get started → Start in production mode
+6. Get your **Web App credentials**:
+   - Project Settings → General → Your Apps → Add App → Web
+   - Copy all `firebaseConfig` values
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Get Gemini API Key (Free)
 
-## Learn More
+1. Go to [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+2. Click **"Create API Key"**
+3. Select your Firebase project or create a new one
+4. Copy the key
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Set Up Google Analytics 4 (Free, Optional)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Go to [analytics.google.com](https://analytics.google.com)
+2. Create a **GA4 property**
+3. Get the **Measurement ID** (starts with `G-`)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 5. Configure Environment Variables
 
-## Deploy on Vercel
+```bash
+cp .env.example .env.local
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Fill in `.env.local`:
+```bash
+NEXT_PUBLIC_FIREBASE_API_KEY=AIza...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
+NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abc123
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+GEMINI_API_KEY=AIza...your-gemini-key...
+```
+
+### 6. Run Locally
+```bash
+npm run dev
+# → http://localhost:3000
+```
+
+---
+
+## 📁 Project Structure
+
+```
+earthly-app/
+├── app/
+│   ├── (auth)/login/          # Login page (Google + email)
+│   ├── (auth)/signup/         # 2-step signup
+│   ├── (dashboard)/           # All dashboard pages
+│   │   ├── layout.tsx         # Sidebar + mobile nav
+│   │   ├── page.tsx           # Main dashboard
+│   │   ├── log/               # Activity logging
+│   │   ├── insights/          # AI insights (Gemini)
+│   │   ├── history/           # Activity history + CSV export
+│   │   └── settings/          # Profile settings
+│   ├── (landing)/page.tsx     # Landing page
+│   └── api/
+│       ├── insights/          # Gemini AI route
+│       └── log/               # CO₂ calculation route
+├── components/
+│   ├── dashboard/             # CO2Ring, WeeklyBarChart, etc.
+│   ├── landing/               # Hero, EarthOrbit, etc.
+│   ├── providers/             # Auth + Query providers
+│   └── ui/                    # Reusable UI primitives
+├── lib/
+│   ├── firebase/              # Auth, Firestore, Storage
+│   ├── co2/                   # Calculator + 28 emission factors
+│   ├── ai/                    # Gemini integration
+│   └── analytics.ts           # GA4 event tracking
+├── types/                     # TypeScript interfaces
+├── firestore.rules            # Security rules
+└── Dockerfile                 # For Cloud Run
+```
+
+---
+
+## 🗃️ Firestore Data Model
+
+```
+users/{userId}
+  ├── (profile fields)         # username, greenScore, streakDays, etc.
+  ├── activityLogs/{logId}     # All emission logs
+  ├── dailySummaries/{date}    # Per-day CO₂ totals by category
+  ├── actions/{actionId}       # Daily recommended actions
+  └── insights/{weekStart}     # Cached Gemini AI insights
+```
+
+---
+
+## ☁️ Deploy to Google Cloud Run
+
+```bash
+# Build and push to Google Container Registry
+gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/earthly
+
+# Deploy to Cloud Run
+gcloud run deploy earthly \
+  --image gcr.io/YOUR_PROJECT_ID/earthly \
+  --platform managed \
+  --region asia-south1 \
+  --allow-unauthenticated \
+  --set-env-vars "NEXT_PUBLIC_FIREBASE_API_KEY=...,GEMINI_API_KEY=..."
+```
+
+---
+
+## 🔐 Security
+
+- **Firestore Rules**: Users can only read/write their own subcollections
+- **Gemini API key**: Server-side only (`GEMINI_API_KEY` — no `NEXT_PUBLIC_` prefix)
+- **Firebase client keys**: Safe to expose (scoped by Firestore rules)
+- **Auth cookie**: Lightweight session for middleware route protection
+
+---
+
+## 📊 Emission Factors
+
+28 factors sourced from:
+- **IPCC 2023** — transport, food, energy, travel, shopping, waste, home
+- **CEA India 2023** — grid electricity emission factor (0.82 kg CO₂/kWh)
+- **UK DEFRA** — supplementary factors
+
+---
+
+*Built with ❤️ for Hack2skills 2025 · 100% Google-powered · 100% free*

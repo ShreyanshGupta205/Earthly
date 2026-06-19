@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Users can only access their own data ──────────────
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // Activity logs subcollection
+      match /activityLogs/{logId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Daily summaries subcollection
+      match /dailySummaries/{date} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Actions subcollection
+      match /actions/{actionId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Insights subcollection
+      match /insights/{weekStart} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // ── Emission factors — public read, no write ───────────
+    match /emissionFactors/{factorId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ── Deny everything else ──────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
