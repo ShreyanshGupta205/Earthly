@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import type * as THREE from 'three'
 
 /* ─── Pure Three.js 3D Earth ─────────────────────────────────────────────── */
 async function buildEarth(canvas: HTMLCanvasElement, onReady: () => void) {
