@@ -19,6 +19,14 @@ const model = genAI.getGenerativeModel({
   },
 })
 
+/**
+ * Generates 4 personalized AI insights for a user based on their weekly emission data.
+ * Falls back to static insights if the Gemini API call fails.
+ *
+ * @param data - Aggregated weekly CO₂ data by category
+ * @param userName - The user's display name for personalized prompts
+ * @returns Array of exactly 4 InsightItem objects
+ */
 export async function generateInsights(data: WeeklyData, userName: string): Promise<InsightItem[]> {
   const weekChange = data.previousWeek > 0
     ? `${data.totalCO2 > data.previousWeek ? '+' : ''}${((data.totalCO2 - data.previousWeek) / data.previousWeek * 100).toFixed(0)}%`
@@ -80,8 +88,8 @@ Rules:
       metric: item.metric || '',
       action: item.action || '',
     }))
-  } catch (error) {
-    console.error('Gemini insights error:', error)
+  } catch (error: unknown) {
+    console.error('Gemini insights error:', error instanceof Error ? error.message : error)
     // Fallback insights
     return generateFallbackInsights(data)
   }

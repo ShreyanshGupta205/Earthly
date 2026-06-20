@@ -37,6 +37,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen bg-bg flex">
+      {/* Skip to main content — accessibility for keyboard/screen reader users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-lime focus:text-black focus:rounded-lg focus:font-bold"
+      >
+        Skip to main content
+      </a>
+
       {/* ── Sidebar (desktop) ────────────────────────────── */}
       <aside className="hidden lg:flex flex-col w-60 border-r fixed top-0 bottom-0 left-0 z-30" style={{ borderColor: 'rgba(125,223,170,0.07)', background: 'var(--bg1)' }}>
         {/* Logo */}
@@ -120,7 +128,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* ── Main content ─────────────────────────────────── */}
-      <main className="flex-1 lg:ml-60 flex flex-col min-h-screen">
+      <main id="main-content" className="flex-1 lg:ml-60 flex flex-col min-h-screen" tabIndex={-1}>
         <div className="flex-1 p-4 lg:p-8 pb-24 lg:pb-8">
           {children}
         </div>

@@ -1,25 +1,36 @@
 import { type ClassValue, clsx } from 'clsx'
 import { Level, LEVELS, Category } from '@/types'
 
-// Tailwind class merge helper (lightweight)
-export function cn(...inputs: ClassValue[]) {
-  return inputs.filter(Boolean).join(' ')
+/**
+ * Merges class names, filtering out falsy values.
+ * Uses clsx for conditional class handling.
+ */
+export function cn(...inputs: ClassValue[]): string {
+  return clsx(inputs)
 }
 
-// Format CO₂ value
+/**
+ * Formats a CO₂ value in kg into a human-readable string.
+ * - >= 1000 kg → tonnes (e.g. "1.50t")
+ * - >= 1 kg → kilograms (e.g. "2.10kg")
+ * - < 1 kg → grams (e.g. "500g")
+ */
 export function formatCO2(kg: number): string {
   if (kg >= 1000) return `${(kg / 1000).toFixed(2)}t`
   if (kg >= 1)    return `${kg.toFixed(2)}kg`
   return `${(kg * 1000).toFixed(0)}g`
 }
 
-// Format date for display
+/** Formats a YYYY-MM-DD date string for display (locale-aware). */
 export function formatDate(dateStr: string): string {
   const d = new Date(dateStr)
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
-// Get relative date label
+/**
+ * Returns a relative date label: "Today", "Yesterday", "Xd ago",
+ * or a formatted date string for dates older than 7 days.
+ */
 export function getRelativeDate(dateStr: string): string {
   const d = new Date(dateStr)
   const now = new Date()
@@ -30,27 +41,41 @@ export function getRelativeDate(dateStr: string): string {
   return formatDate(dateStr)
 }
 
-// Calculate green score (0–100)
+/**
+ * Calculates a green score from 0 to 100 based on daily CO₂ average.
+ * A score of 100 means zero emissions; 0 means at or above the global average (13 kg/day).
+ */
 export function calcGreenScore(dailyAvgKg: number): number {
   const globalAvg = 13 // kg CO₂/day
   const score = Math.max(0, Math.min(100, (1 - dailyAvgKg / globalAvg) * 100))
   return Math.round(score * 10) / 10
 }
 
-// Get level based on green score
+/**
+ * Returns the gamification Level object for a given green score.
+ * Levels are defined in the LEVELS constant in types/index.ts.
+ */
 export function getLevel(greenScore: number): Level {
   const levels = [...LEVELS].reverse()
   return levels.find(l => greenScore >= l.min) || LEVELS[0]
 }
 
-// Get color for CO₂ value relative to target
+/**
+ * Returns a color hex string indicating CO₂ level relative to climate targets.
+ * - Green (#CAFF33): on target (≤ 2t/year)
+ * - Amber (#F5A523): moderate (≤ 6t/year)
+ * - Red (#FF4F4F): high (> 6t/year)
+ */
 export function getCO2Color(annualTonnes: number): string {
   if (annualTonnes <= 2)  return '#CAFF33' // green — on target
   if (annualTonnes <= 6)  return '#F5A523' // amber — moderate
   return '#FF4F4F'                          // red — high
 }
 
-// Get week start date (Monday)
+/**
+ * Returns the ISO date string (YYYY-MM-DD) for the Monday of the week
+ * containing the given date. Defaults to the current week.
+ */
 export function getWeekStart(date: Date = new Date()): string {
   const d = new Date(date)
   const day = d.getDay()
@@ -59,7 +84,10 @@ export function getWeekStart(date: Date = new Date()): string {
   return d.toISOString().split('T')[0]
 }
 
-// Get last N days as date strings
+/**
+ * Returns an array of the last N date strings (YYYY-MM-DD),
+ * ordered oldest-first, ending with today.
+ */
 export function getLastNDays(n: number): string[] {
   const days: string[] = []
   for (let i = n - 1; i >= 0; i--) {
@@ -70,17 +98,22 @@ export function getLastNDays(n: number): string[] {
   return days
 }
 
-// Convert annual kg to tonnes
+/**
+ * Converts kilograms to metric tonnes, rounded to 2 decimal places.
+ */
 export function kgToTonnes(kg: number): number {
   return Math.round((kg / 1000) * 100) / 100
 }
 
-// Convert daily kg CO₂ to annual tonnes
+/**
+ * Converts a daily CO₂ average (kg/day) to annual tonnes.
+ * Formula: dailyKg × 365 / 1000, rounded to 2 decimal places.
+ */
 export function dailyToAnnualTonnes(dailyKg: number): number {
   return parseFloat((dailyKg * 365 / 1000).toFixed(2))
 }
 
-// Global benchmarks (kg CO₂/day)
+/** Global CO₂ emission benchmarks in kg/day, sourced from IPCC 2023 and CEA India. */
 export const BENCHMARKS = {
   globalAvg: 13,
   indiaAvg:  4.7,
@@ -88,22 +121,34 @@ export const BENCHMARKS = {
   target2:   7.5,
 }
 
-// Format number with commas
+/**
+ * Formats a number with locale-appropriate grouping separators.
+ * @param n - The number to format
+ * @param decimals - Maximum decimal places (default: 1)
+ */
 export function formatNumber(n: number, decimals = 1): string {
   return n.toLocaleString('en-IN', { maximumFractionDigits: decimals })
 }
 
-// Clamp value
+/**
+ * Clamps a value between min and max (inclusive).
+ */
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max)
 }
 
-// Short day labels
+/**
+ * Returns a short weekday label (e.g. "Mon", "Tue") for a date string.
+ */
 export function getShortDay(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'short' })
 }
 
-// Generate daily action suggestions based on top emissions
+/**
+ * Generates a list of daily action suggestions based on the user's top emission categories.
+ * Returns up to 3 actions, one per top category.
+ * @param topCategories - Array of category objects with co2 values, sorted highest-first
+ */
 export function generateActions(topCategories: Array<{ category: string; co2: number }>) {
   const actionMap: Record<string, Array<{ title: string; savingKg: number }>> = {
     transport: [
