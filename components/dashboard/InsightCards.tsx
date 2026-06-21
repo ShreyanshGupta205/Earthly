@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { RefreshCw, Trophy, AlertTriangle, TrendingUp, Info } from 'lucide-react'
-import { InsightItem } from '@/types'
+import type { InsightItem } from '@/types'
 import { useState } from 'react'
 import { Analytics } from '@/lib/analytics'
 
@@ -79,13 +79,14 @@ export function InsightCards({ insights, loading, onRefresh }: Props) {
           const cfg = TYPE_CONFIG[insight.type] || TYPE_CONFIG.info
           const Icon = cfg.icon
           return (
-            <motion.div
-              key={i}
+            <motion.article
+              key={`${insight.type}-${insight.title}`}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
               className="glass-card p-5 flex flex-col gap-3 hover:scale-[1.01] transition-transform"
               style={{ borderColor: `${cfg.color}15` }}
+              aria-label={`${cfg.label} insight: ${insight.title}`}
             >
               {/* Header */}
               <div className="flex items-start justify-between gap-2">
@@ -119,7 +120,7 @@ export function InsightCards({ insights, loading, onRefresh }: Props) {
               >
                 → {insight.action}
               </div>
-            </motion.div>
+            </motion.article>
           )
         })}
       </div>

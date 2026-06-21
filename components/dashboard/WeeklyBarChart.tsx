@@ -1,7 +1,7 @@
 'use client'
 
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
-import { DailySummary } from '@/types'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import type { DailySummary } from '@/types'
 import { getShortDay } from '@/lib/utils'
 
 interface Props {
@@ -18,13 +18,25 @@ const CATEGORY_COLORS: Record<string, string> = {
   homeCo2:      '#FF9B4F',
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface TooltipPayloadEntry {
+  name: string
+  value: number
+  fill: string
+}
+
+interface CustomTooltipProps {
+  active?: boolean
+  payload?: TooltipPayloadEntry[]
+  label?: string
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (!active || !payload?.length) return null
-  const total = payload.reduce((s: number, p: any) => s + (p.value || 0), 0)
+  const total = payload.reduce((s, p) => s + (p.value || 0), 0)
   return (
     <div className="glass-card p-3 text-xs min-w-[140px]">
       <p className="text-sand font-semibold mb-2">{label} — {total.toFixed(2)} kg</p>
-      {payload.map((p: any) => p.value > 0 && (
+      {payload.map((p) => p.value > 0 && (
         <div key={p.name} className="flex items-center gap-2 mb-1">
           <div className="w-2 h-2 rounded-full" style={{ background: p.fill }} />
           <span className="text-muted capitalize">{p.name.replace('Co2', '')}</span>

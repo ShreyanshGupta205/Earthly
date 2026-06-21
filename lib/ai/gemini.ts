@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai'
-import { InsightItem, WeeklyData } from '@/types'
+import type { InsightItem, WeeklyData } from '@/types'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
@@ -97,7 +97,7 @@ Rules:
 
 function generateFallbackInsights(data: WeeklyData): InsightItem[] {
   const topCategory = Object.entries(data.byCategory)
-    .sort(([, a], [, b]) => (b as number) - (a as number))[0]?.[0] || 'transport'
+    .sort(([, a], [, b]) => b - a)[0]?.[0] ?? 'transport'
 
   return [
     {

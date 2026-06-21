@@ -187,6 +187,12 @@ describe('getLevel()', () => {
     expect(level).toHaveProperty('color')
     expect(level).toHaveProperty('emoji')
   })
+
+  it('falls back to first level for score below min (negative or edge case)', () => {
+    // Simulates a corrupted score value below 0 — should safely return first level
+    const level = getLevel(-10)
+    expect(level.label).toBe('Carbon Starter')
+  })
 })
 
 // ─── getCO2Color() ───────────────────────────────────────────────────────────

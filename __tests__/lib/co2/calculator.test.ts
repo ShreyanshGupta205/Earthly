@@ -151,6 +151,14 @@ describe('previewCO2()', () => {
     const result = previewCO2('beef', 3)
     expect(result).toBe('19.83 kg CO₂')
   })
+
+  it('returns μg CO₂ format for extremely small values (< 0.001 kg)', () => {
+    // recycled: 0.021 kg/kg × 0.001 kg = 0.000021 kg → well under 0.001 threshold
+    // Use electricity_solar: 0.04 kg/kWh × 0.001 kWh = 0.00004 kg
+    const result = previewCO2('electricity_solar', 0.001)
+    // 0.04 × 0.001 = 0.00004 kg → 40 μg CO₂
+    expect(result).toContain('μg CO₂')
+  })
 })
 
 // ─── dailyToAnnualTonnes() ───────────────────────────────────────────────────

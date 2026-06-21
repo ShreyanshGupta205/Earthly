@@ -5,6 +5,7 @@ import { useAuthContext } from '@/components/providers/AuthProvider'
 import { updateUserProfile } from '@/lib/firebase/firestore'
 import { signOut } from '@/lib/firebase/auth'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { User, Globe, Save, LogOut } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -62,7 +63,7 @@ export default function SettingsPage() {
         <div className="flex items-center gap-4 mb-6 pb-6 border-b" style={{ borderColor: 'rgba(125,223,170,0.07)' }}>
           <div className="w-16 h-16 rounded-full bg-card2 border-2 border-border flex items-center justify-center text-3xl overflow-hidden">
             {profile?.avatarUrl
-              ? <img src={profile.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ? <Image src={profile.avatarUrl} alt="Avatar" width={64} height={64} className="w-full h-full object-cover" />
               : user?.email?.[0]?.toUpperCase() || '?'
             }
           </div>

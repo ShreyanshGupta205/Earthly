@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion'
 import { Trash2 } from 'lucide-react'
-import { ActivityLog, CATEGORY_META } from '@/types'
+import type { ActivityLog } from '@/types'
+import { CATEGORY_META } from '@/types'
 import { formatCO2, getRelativeDate } from '@/lib/utils'
 import { deleteLog } from '@/lib/firebase/firestore'
 import { useAuthContext } from '@/components/providers/AuthProvider'
@@ -30,8 +31,8 @@ export function ActivityFeed({ logs, onDelete }: Props) {
 
   if (!logs.length) {
     return (
-      <div className="text-center py-12 text-muted">
-        <div className="text-4xl mb-3">📋</div>
+      <div role="status" className="text-center py-12 text-muted" aria-label="No activities logged yet">
+        <div className="text-4xl mb-3" aria-hidden="true">📋</div>
         <p className="text-sm">No activities logged yet.</p>
         <p className="text-xs mt-1">Start logging to see your feed!</p>
       </div>
@@ -39,7 +40,7 @@ export function ActivityFeed({ logs, onDelete }: Props) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" role="feed" aria-label="Recent activities">
       {logs.map((log, i) => {
         const meta = CATEGORY_META[log.category]
         return (

@@ -23,8 +23,8 @@ export default function SignupPage() {
       await signInWithGoogle()
       Analytics.signup('google')
       nav.push('/dashboard')
-    } catch (e: any) {
-      setError(e.message || 'Google sign-in failed')
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Google sign-in failed')
     } finally {
       setLoading(null)
     }
@@ -38,13 +38,14 @@ export default function SignupPage() {
       await signUpWithEmail(email, password, fullName, username)
       Analytics.signup('email')
       nav.push('/dashboard')
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const code = (e as { code?: string }).code
       const msg: Record<string, string> = {
         'auth/email-already-in-use': 'Email already registered. Try signing in.',
         'auth/weak-password':        'Password must be at least 6 characters.',
         'auth/invalid-email':        'Please enter a valid email address.',
       }
-      setError(msg[e.code] || e.message)
+      setError((code && msg[code]) || (e instanceof Error ? e.message : 'Sign-up failed'))
     } finally {
       setLoading(null)
     }

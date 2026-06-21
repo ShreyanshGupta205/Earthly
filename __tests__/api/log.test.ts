@@ -266,4 +266,54 @@ describe('POST /api/log', () => {
     const response = await POST(req)
     expect(response.headers.get('X-Frame-Options')).toBe('DENY')
   })
+
+  it('returns 415 when Content-Type header is absent', async () => {
+    // Exercises the `?? ''` nullish coalescing branch on line 32 (null → empty string → 415)
+    const req = new Request('http://localhost/api/log', {
+      method: 'POST',
+      body: JSON.stringify({ category: 'transport', subType: 'car_petrol', quantity: 10, unit: 'km', userId: 'user_123' }),
+    })
+    req.headers.delete('content-type')
+    // No Content-Type header set — defaults to null, then empty string ''
+    const response = await POST(req)
+    // Empty string does not include 'application/json' → 415
+    expect(response.status).toBe(415)
+  })
 })
+
+// ─── Non-Error exception branch coverage ─────────────────────────────────────
+
+describe('POST /api/log — non-Error exception', () => {
+  beforeEach(() => {
+    jest.resetModules()
+    jest.mock('@/lib/co2/calculator', () => ({
+      calculateCO2: () => { throw 'string error' }, // eslint-disable-line @typescript-eslint/no-throw-literal
+    }))
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
+  it('returns 500 with generic message when a non-Error is thrown (instanceof Error false branch)', async () => {
+    // Re-import route after mocking calculateCO2 to throw a non-Error
+    const { POST: postFn } = await import('@/app/api/log/route')
+    const req = new Request('http://localhost/api/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        category: 'transport',
+        subType: 'car_petrol',
+        quantity: 10,
+        unit: 'km',
+        userId: 'user_123',
+      }),
+    })
+    const response = await postFn(req)
+    expect(response.status).toBe(500)
+    const json = await response.json()
+    // Non-Error → 'Internal server error'
+    expect(json.error).toBe('Internal server error')
+  })
+})
+

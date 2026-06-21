@@ -1,10 +1,10 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { User } from 'firebase/auth'
+import type { User } from 'firebase/auth'
 import { onAuthChange } from '@/lib/firebase/auth'
 import { getUserProfile } from '@/lib/firebase/firestore'
-import { Profile } from '@/types'
+import type { Profile } from '@/types'
 
 interface AuthContextValue {
   user:    User | null

@@ -1,12 +1,12 @@
 import {
   doc, getDoc, setDoc, updateDoc, addDoc, deleteDoc,
   collection, query, where, orderBy, limit,
-  getDocs, Timestamp, serverTimestamp, writeBatch,
-  onSnapshot, DocumentData,
+  getDocs, serverTimestamp, writeBatch,
 } from 'firebase/firestore'
 import { db } from './config'
-import { Profile, ActivityLog, DailySummary, Action, InsightItem, Category } from '@/types'
+import type { Profile, ActivityLog, DailySummary, Action, InsightItem, Category } from '@/types'
 
+/** Asserts that Firestore DB is configured, throws otherwise. */
 function requireDb() {
   if (!db) throw new Error('Firebase DB not configured')
   return db
@@ -46,7 +46,7 @@ export async function logActivity(uid: string, data: Omit<ActivityLog, 'id' | 'u
   const profile = await getUserProfile(uid)
   if (profile) {
     await updateUserProfile(uid, {
-      totalSaved: profile.totalSaved,
+      totalSaved: (profile.totalSaved || 0) + data.co2Kg,
       lastActive: data.date,
     })
   }

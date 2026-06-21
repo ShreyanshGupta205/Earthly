@@ -23,8 +23,8 @@ function LoginContent() {
       await signInWithGoogle()
       Analytics.login('google')
       nav.push(from)
-    } catch (e: any) {
-      setError(e.message || 'Google sign-in failed')
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Google sign-in failed')
     } finally {
       setLoading(null)
     }
@@ -37,8 +37,9 @@ function LoginContent() {
       await signInWithEmail(email, password)
       Analytics.login('email')
       nav.push(from)
-    } catch (e: any) {
-      setError(e.code === 'auth/invalid-credential' ? 'Invalid email or password' : e.message)
+    } catch (e: unknown) {
+      const code = (e as { code?: string }).code
+      setError(code === 'auth/invalid-credential' ? 'Invalid email or password' : (e instanceof Error ? e.message : 'Sign-in failed'))
     } finally {
       setLoading(null)
     }

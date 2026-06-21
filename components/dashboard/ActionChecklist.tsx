@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, Leaf } from 'lucide-react'
-import { Action, CATEGORY_META } from '@/types'
+import type { Action } from '@/types'
+import { CATEGORY_META } from '@/types'
 import { toggleAction } from '@/lib/firebase/firestore'
 import { useAuthContext } from '@/components/providers/AuthProvider'
 import { Analytics } from '@/lib/analytics'
@@ -36,8 +37,8 @@ export function ActionChecklist({ actions, onUpdate }: Props) {
 
   if (!actions.length) {
     return (
-      <div className="text-center py-8 text-muted">
-        <div className="text-3xl mb-2">✅</div>
+      <div role="status" className="text-center py-8 text-muted">
+        <div className="text-3xl mb-2" aria-hidden="true">✅</div>
         <p className="text-sm">Actions will appear after you log activities.</p>
       </div>
     )
@@ -55,7 +56,14 @@ export function ActionChecklist({ actions, onUpdate }: Props) {
           </div>
         )}
       </div>
-      <div className="h-1.5 bg-card2 rounded-full overflow-hidden">
+      <div
+        className="h-1.5 bg-card2 rounded-full overflow-hidden"
+        role="progressbar"
+        aria-valuenow={actions.length ? Math.round((completed / actions.length) * 100) : 0}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`${completed} of ${actions.length} actions completed`}
+      >
         <motion.div
           className="h-full rounded-full"
           style={{ background: 'var(--lime)' }}

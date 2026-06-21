@@ -75,8 +75,8 @@ export default function LogPage() {
       setSuccess(co2Kg)
       reset({ date: new Date().toISOString().split('T')[0] })
       setTimeout(() => setSuccess(null), 4000)
-    } catch (e: any) {
-      setError(e.message || 'Failed to log activity')
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to log activity')
     } finally {
       setLoading(false)
     }
@@ -99,8 +99,8 @@ export default function LogPage() {
       Analytics.logActivity(q.category, co2Kg)
       setSuccess(co2Kg)
       setTimeout(() => setSuccess(null), 4000)
-    } catch (e: any) {
-      setError(e.message)
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to log activity')
     } finally {
       setLoading(false)
     }

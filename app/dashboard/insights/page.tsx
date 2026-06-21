@@ -3,15 +3,12 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { useAuthContext } from '@/components/providers/AuthProvider'
 import { InsightCards } from '@/components/dashboard/InsightCards'
-import { WeeklyBarChart } from '@/components/dashboard/WeeklyBarChart'
 import { useQuery } from '@tanstack/react-query'
-import { getWeeklySummaries, getLogsByDateRange } from '@/lib/firebase/firestore'
-import { InsightItem, CATEGORY_META } from '@/types'
-import { getWeekStart, calcGreenScore, BENCHMARKS, dailyToAnnualTonnes } from '@/lib/utils'
-import { calculateCO2 } from '@/lib/co2/calculator'
+import { getWeeklySummaries } from '@/lib/firebase/firestore'
+import type { InsightItem } from '@/types'
+import { getWeekStart, BENCHMARKS, getShortDay } from '@/lib/utils'
 import { EMISSION_FACTORS } from '@/lib/co2/factors'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
-import { getShortDay } from '@/lib/utils'
 import { Analytics } from '@/lib/analytics'
 
 
@@ -31,11 +28,6 @@ export default function InsightsPage() {
 
   const totalCo2   = weeklySummaries.reduce((s, d) => s + d.totalCo2, 0)
   const dailyAvg   = totalCo2 / 7 || 0
-  const annualT    = dailyToAnnualTonnes(dailyAvg)
-
-  // What-if calculator
-  const currentFactor = EMISSION_FACTORS[whatIfSubType]
-  const whatIfSaving  = whatIfKm * (currentFactor?.co2PerUnit || 0) * 365 / 1000
 
   // Stable fingerprint — only changes when CO2 values change
   const weekFingerprint = `${user?.uid}-${totalCo2.toFixed(2)}`
@@ -53,9 +45,9 @@ export default function InsightsPage() {
         food:      weeklySummaries.reduce((s, d) => s + d.foodCo2, 0),
         energy:    weeklySummaries.reduce((s, d) => s + d.energyCo2, 0),
         shopping:  weeklySummaries.reduce((s, d) => s + d.shoppingCo2, 0),
-        waste:     weeklySummaries.reduce((s, d) => s + ((d as any).wasteCo2 || 0), 0),
-        travel:    weeklySummaries.reduce((s, d) => s + ((d as any).travelCo2 || 0), 0),
-        home:      weeklySummaries.reduce((s, d) => s + ((d as any).homeCo2 || 0), 0),
+        waste:     weeklySummaries.reduce((s, d) => s + d.wasteCo2, 0),
+        travel:    weeklySummaries.reduce((s, d) => s + d.travelCo2, 0),
+        home:      weeklySummaries.reduce((s, d) => s + d.homeCo2, 0),
       }
       const topCat = Object.entries(byCat).sort(([,a],[,b]) => b-a)[0]?.[0] || 'transport'
 

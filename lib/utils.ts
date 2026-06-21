@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx'
-import { Level, LEVELS, Category } from '@/types'
+import { LEVELS } from '@/types'
+import type { Level, Category } from '@/types'
 
 /**
  * Merges class names, filtering out falsy values.

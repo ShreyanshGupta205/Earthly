@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useAuthContext } from '@/components/providers/AuthProvider'
 import { getLogsByDateRange, deleteLog } from '@/lib/firebase/firestore'
-import { CATEGORY_META, ActivityLog } from '@/types'
+import { CATEGORY_META } from '@/types'
 import { formatCO2, formatDate } from '@/lib/utils'
 import { useQuery } from '@tanstack/react-query'
 import { Download, Trash2, Filter } from 'lucide-react'

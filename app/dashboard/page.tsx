@@ -13,11 +13,9 @@ import {
   getRecentLogs, getWeeklySummaries, getTodayActions,
   setTodayActions, getDailySummary,
 } from '@/lib/firebase/firestore'
-import { dailyToAnnualTonnes, calcGreenScore } from '@/lib/utils'
-import { generateActions } from '@/lib/utils'
-import { InsightItem } from '@/types'
+import { dailyToAnnualTonnes, calcGreenScore, generateActions, getWeekStart } from '@/lib/utils'
+import type { InsightItem } from '@/types'
 import { Analytics } from '@/lib/analytics'
-import { getWeekStart } from '@/lib/utils'
 
 export default function DashboardPage() {
   const { user, profile, refreshProfile } = useAuthContext()
@@ -68,12 +66,12 @@ export default function DashboardPage() {
       .slice(0, 3)
 
     if (topCategories.some(c => c.co2 > 0)) {
-      const newActions = generateActions(topCategories as any)
+      const newActions = generateActions(topCategories)
       setTodayActions(user.uid, newActions.map(a => ({
         date: today, ...a, userId: user.uid, isCompleted: false,
       }))).then(() => refetchActions())
     }
-  }, [user, actions.length, weeklySummaries, today])
+  }, [user, actions.length, weeklySummaries, today, refetchActions])
 
   // Compute category totals as stable primitives (avoids array reference instability)
   const totalCo2Week = weeklySummaries.reduce((s, d) => s + d.totalCo2, 0)
@@ -82,9 +80,9 @@ export default function DashboardPage() {
     food:      weeklySummaries.reduce((s, d) => s + d.foodCo2, 0),
     energy:    weeklySummaries.reduce((s, d) => s + d.energyCo2, 0),
     shopping:  weeklySummaries.reduce((s, d) => s + d.shoppingCo2, 0),
-    waste:     weeklySummaries.reduce((s, d) => s + ((d as any).wasteCo2 || 0), 0),
-    travel:    weeklySummaries.reduce((s, d) => s + ((d as any).travelCo2 || 0), 0),
-    home:      weeklySummaries.reduce((s, d) => s + ((d as any).homeCo2 || 0), 0),
+    waste:     weeklySummaries.reduce((s, d) => s + d.wasteCo2, 0),
+    travel:    weeklySummaries.reduce((s, d) => s + d.travelCo2, 0),
+    home:      weeklySummaries.reduce((s, d) => s + d.homeCo2, 0),
   }
   // Stable fingerprint — only changes when actual values change
   const weekFingerprint = `${user?.uid}-${totalCo2Week.toFixed(2)}`

@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useEffect } from 'react'
 import { LayoutDashboard, PlusCircle, Lightbulb, History, Settings, LogOut, Flame, Leaf } from 'lucide-react'
 import { useAuthContext } from '@/components/providers/AuthProvider'
@@ -103,7 +104,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-3 px-1">
             <div className="w-9 h-9 rounded-full bg-card2 border border-border flex items-center justify-center text-lg overflow-hidden flex-shrink-0">
               {profile?.avatarUrl ? (
-                <img src={profile.avatarUrl} alt={profile.fullName} className="w-full h-full object-cover" />
+                <Image src={profile.avatarUrl} alt={profile.fullName} width={36} height={36} className="w-full h-full object-cover" />
               ) : (
                 user.email?.[0]?.toUpperCase() || '?'
               )}

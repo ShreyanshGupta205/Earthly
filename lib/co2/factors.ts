@@ -1,4 +1,4 @@
-import { EmissionFactor, Category } from '@/types'
+import type { EmissionFactor, Category } from '@/types'
 
 // All 28 emission factors (IPCC 2023 / UK DEFRA)
 export const EMISSION_FACTORS: Record<string, EmissionFactor> = {

@@ -6,7 +6,7 @@ import {
   signOut as firebaseSignOut,
   updateProfile,
   onAuthStateChanged,
-  User,
+  type User,
 } from 'firebase/auth'
 import { auth } from './config'
 import { createUserProfile } from './firestore'
